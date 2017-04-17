@@ -1,5 +1,6 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 #include <iostream>
 #include <string>
@@ -22,8 +23,9 @@ int main(int argc, char** argv)
 	}
 
 	namedWindow(image_name, CV_WINDOW_AUTOSIZE);
+	resize(image, image, Size(), 20, 20); //for better preview test.png
 	imshow(image_name, image);
 
-	system("pause");
+	waitKey(0);
 	return 0;
 }
