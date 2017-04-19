@@ -2,17 +2,66 @@
 
 #include <opencv2/core/core.hpp>
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 using namespace cv;
 
 namespace vmf {
 
-	int calcPixelsWindow(unsigned char *p, unsigned int *window, int rows, int cols, int c, int n) {
+
+	int calcDistanceMatrix(int* window, int size, int c) {
+
+		double *distanceMatrix = new double[size*size]();
+		double *rp, *cp;
+		rp = distanceMatrix; //distance matrix columns pointer
+		cp = distanceMatrix; //distance matrix rows pointer
+		int *wp; //window pointer
+		wp = window;
+		int start[3] = { 0 };
+
+		for (int i = 0; i < size; i++) {
+			rp = rp + i + 1;
+			cp = cp + size * (i + 1);
+
+			for (int k = 0; k < c; k++) {
+				start[k] = *wp;
+				*wp++;
+			}
+
+			for (int j = 0; j < size - i - 1; j++) {
+				double sum = 0;
+				for (int l = 0; l < c; l++) {
+					sum += pow(start[l] - (*wp), 2);
+					wp++;
+				}
+				double dist = sqrt(sum);
+				*rp = dist;
+				*cp = dist;
+
+				rp++;
+				cp += size;
+			}
+			wp = &window[(i + 1)*c];
+			cp = &distanceMatrix[i + 1];
+		}
+
+		cout << endl << endl;
+		for (int i = 1; i <= size*size; i++) {
+			cout << distanceMatrix[i - 1] << " ";
+			if (i % 9 == 0) cout << endl;
+		}
+
+		delete[] distanceMatrix;
+		return 1;
+
+	}
+
+	int calcPixelsWindow(unsigned char *p, int *window, int rows, int cols, int c, int n) {
 		if (rows < n || cols < n || n < 1) {
 			return -1;
 		}
-		unsigned int *wp; //window pointer
+		int *wp; //window pointer
 		wp = window;
 
 		for (int i = 0; i < rows - (n - 1); i++) {
@@ -43,14 +92,14 @@ namespace vmf {
 		unsigned char *p = (unsigned char*)(image.data);
 		const int c = image.channels();
 		const int n = size;
-		unsigned int* window = new unsigned int[n*n*c];
+		int* window = new int[n*n*c];
 		calcPixelsWindow(p, window, image.rows, image.cols, c, n);
 		for (int a = 0; a < n*n*c; a++) {
 			cout << window[a] << " ";
 		}
 		delete[] window;
-
 	}
+
 
 	int vmfFilter(Mat image) {
 		return -1;
