@@ -9,6 +9,25 @@ using namespace cv;
 
 namespace vmf {
 
+	void setPixel(unsigned char* p, int* pixel, int c) {
+		int* pp = pixel; //pixel pointer
+		
+		for (int i = 0; i < c; i++) {
+			*p = *pp;
+			pp++;
+			p++;
+		}
+	}
+
+	void findPixel(int* window, int* pixel, int index, int n, int c) {
+		int* pp = pixel; //pixel pointer
+		
+		for (int i = 0; i < c; i++) {
+			*pp = window[index*c];
+			pp++;
+		}
+	}
+
 	int findMinIndex(double* sums, int n) {
 		double *p = sums;
 		double min = *p;
@@ -98,6 +117,8 @@ namespace vmf {
 		}
 		int *wp; //window pointer
 		wp = window;
+		unsigned char *midp; //middle point of window
+		midp = p;
 
 		for (int i = 0; i < rows - (n - 1); i++) {
 			for (int j = 0; j < cols - (n - 1); j++) {
@@ -105,6 +126,10 @@ namespace vmf {
 					for (int l = 0; l < n; l++) {
 						for (int m = 0; m < c; m++) {
 							//cout << (int)*p << " ";
+							if (k == n / 2 && k == l) {
+								// << (int)*p << " ";
+								midp = p;
+							}
 							*wp = (int)*p;
 							wp++;
 							p++; //grayscale or rgb values
