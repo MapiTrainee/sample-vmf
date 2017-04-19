@@ -9,27 +9,26 @@ using namespace cv;
 
 namespace vmf {
 
+	int calcDistanceMatrix(int* window, double* distance_matrix, int n, int c) {
+		if (n < 1) return -1;
 
-	int calcDistanceMatrix(int* window, int size, int c) {
-
-		double *distanceMatrix = new double[size*size]();
 		double *rp, *cp;
-		rp = distanceMatrix; //distance matrix columns pointer
-		cp = distanceMatrix; //distance matrix rows pointer
+		rp = distance_matrix; //distance matrix rows pointer
+		cp = distance_matrix; //distance matrix colums pointer
 		int *wp; //window pointer
 		wp = window;
 		int start[3] = { 0 };
 
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < n; i++) {
 			rp = rp + i + 1;
-			cp = cp + size * (i + 1);
+			cp = cp + n * (i + 1);
 
 			for (int k = 0; k < c; k++) {
 				start[k] = *wp;
 				*wp++;
 			}
 
-			for (int j = 0; j < size - i - 1; j++) {
+			for (int j = 0; j < n - i - 1; j++) {
 				double sum = 0;
 				for (int l = 0; l < c; l++) {
 					sum += pow(start[l] - (*wp), 2);
@@ -40,21 +39,24 @@ namespace vmf {
 				*cp = dist;
 
 				rp++;
-				cp += size;
+				cp += n;
 			}
 			wp = &window[(i + 1)*c];
-			cp = &distanceMatrix[i + 1];
+			cp = &distance_matrix[i + 1];
 		}
-
-		cout << endl << endl;
-		for (int i = 1; i <= size*size; i++) {
-			cout << distanceMatrix[i - 1] << " ";
-			if (i % 9 == 0) cout << endl;
-		}
-
-		delete[] distanceMatrix;
 		return 1;
+	}
 
+	void createDistanceMatrix(int* window, int size, int channels) {
+		double *distance_matrix = new double[size*size]();
+
+		calcDistanceMatrix(window, distance_matrix, size, channels);
+		for (int i = 1; i <= size*size; i++) {
+			cout << distance_matrix[i - 1] << " ";
+			if (i % size == 0) cout << endl;
+		}
+
+		delete[] distance_matrix;
 	}
 
 	int calcPixelsWindow(unsigned char *p, int *window, int rows, int cols, int c, int n) {
