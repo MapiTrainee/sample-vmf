@@ -18,13 +18,52 @@ namespace UnitTestSampleVMF
 		TEST_METHOD(TestCalcDistanceMatrix_Window2by2_ExpectedMatrix4by4)
 		{
 			const int n = 4;
-			int channels = 1;
-			int window[n] = { 1, 2, 3, 4 };
+			const int channels = 1;
+			int window[n*channels] = { 1, 2, 3, 4 };
 			double expected_matrix[n*n] = {
 				0, 1, 2, 3,
 				1, 0, 1, 2,
 				2, 1, 0, 1,
 				3, 2, 1, 0
+			};
+			double* actual_matrix = new double[n*n];
+
+			vmf::calcDistanceMatrix(window, actual_matrix, n, channels);
+			for (int i = 0; i < n*n; i++) {
+				Assert::AreEqual(expected_matrix[i], actual_matrix[i]);
+			}
+
+			delete[] actual_matrix;
+		}
+
+		TEST_METHOD(TestCalcDistanceMatrix_RgbWindow2by2_ExpectedMatrix4by4)
+		{
+			const int n = 4;
+			const int channels = 3;
+			int window[n*channels] = { 1, 2, 1, 1, 2, 2, 1, 2, 3, 1, 2, 4 };
+			double expected_matrix[n*n] = {
+				0, 1, 2, 3,
+				1, 0, 1, 2,
+				2, 1, 0, 1,
+				3, 2, 1, 0
+			};
+			double* actual_matrix = new double[n*n];
+
+			vmf::calcDistanceMatrix(window, actual_matrix, n, channels);
+			for (int i = 0; i < n*n; i++) {
+				Assert::AreEqual(expected_matrix[i], actual_matrix[i]);
+			}
+
+			delete[] actual_matrix;
+		}
+
+		TEST_METHOD(TestCalcDistanceMatrix_RgbWindow1by1_ExpectedMatrix1by1)
+		{
+			const int n = 1;
+			const int channels = 3;
+			int window[n*channels] = { 1, 2, 3 };
+			double expected_matrix[n*n] = {
+				0
 			};
 			double* actual_matrix = new double[n*n];
 
