@@ -9,6 +9,39 @@ using namespace cv;
 
 namespace vmf {
 
+	int findMinIndex(double* sums, int n) {
+		double *p = sums;
+		double min = *p;
+		int index = 0;
+		p++;
+
+		for (int i = 1; i < n; i++) {
+			if (min > *p) {
+				min = *p;
+				index = i;
+			}
+			p++;
+		}
+
+		return index;
+	}
+
+	void sumMatrixRows(double* matrix, double* sums, int rows, int cols) {
+		double *p = matrix;
+		double *sp = sums;
+
+		for (int i = 0; i < rows; i++) {
+			double sum = 0;
+			for (int j = 0; j < cols; j++) {
+				cout << *p << " ";
+				sum += *p;
+				p++;
+			}
+			*sp = sum;
+			sp++;
+		}
+	}
+
 	int calcDistanceMatrix(int* window, double* distance_matrix, int n, int c) {
 		if (n < 1) return -1;
 
