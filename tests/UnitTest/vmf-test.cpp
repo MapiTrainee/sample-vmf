@@ -15,6 +15,86 @@ namespace UnitTestSampleVMF
 			Assert::IsTrue(1 == 1);
 		}
 
+		TEST_METHOD(TestSetPixel_Pixel_ExpectedArray)
+		{
+			const int n = 3;
+			const int c = 1;
+			int pixel[c] = {0};
+			unsigned char actual_array[n*n*c] = {
+				1, 2, 3, 4, 5, 6, 7, 8, 9
+			};
+			unsigned char *p = actual_array;
+			unsigned char expected_array[n*n*c] = {
+				0, 2, 0, 4, 5, 6, 7, 8, 9
+			};
+
+			vmf::setPixel(p, pixel, c);
+			p += 2 * c;
+			vmf::setPixel(p, pixel, c);
+			for (int i = 0; i < c; i++) {
+				Assert::AreEqual(expected_array[i], actual_array[i]);
+			}
+		}
+
+		TEST_METHOD(TestSetPixel_RgbPixel_ExpectedArray)
+		{
+			const int n = 2;
+			const int c = 3;
+			int pixel[c] = { 1, 2, 3 };
+			unsigned char actual_array[n*n*c] = { 0 };
+			unsigned char *p = actual_array;
+			unsigned char expected_array[n*n*c] = {
+				1, 2, 3, 0, 0, 0,
+				0, 0, 0, 1, 2, 3
+			};
+
+			vmf::setPixel(p, pixel, c);
+			p += 2 * c;
+			vmf::setPixel(p, pixel, c);
+			for (int i = 0; i < c; i++) {
+				Assert::AreEqual(expected_array[i], actual_array[i]);
+			}
+		}
+
+		TEST_METHOD(TestFindPixel_SampleWindow_ExpectedPixel)
+		{
+			const int n = 3;
+			const int c = 1;
+			int index = 8;
+			int window[n*n*c] = {
+				0, 1, 2,
+				3, 4, 5,
+				6, 7, 8
+			};
+
+			int actual_rgb_pixel[c] = { 0 };
+			int expected_rgb_pixel[c] = { 8 };
+
+			vmf::findPixel(window, actual_rgb_pixel, index, n, c);
+			for (int i = 0; i < c; i++) {
+				Assert::AreEqual(expected_rgb_pixel[i], actual_rgb_pixel[i]);
+			}
+		}
+
+		TEST_METHOD(TestFindPixel_SampleRgbWindow_ExpectedRgbPixel)
+		{
+			const int n = 2;
+			const int c = 3;
+			int index = 2;
+			int window[n*n*c] = {
+				1, 1, 1, 2, 2, 2,
+				3, 3, 3, 4, 4, 4
+			};
+
+			int actual_rgb_pixel[c] = { 0 };
+			int expected_rgb_pixel[c] = { 3,3,3 };
+
+			vmf::findPixel(window, actual_rgb_pixel, index, n, c);
+			for (int i = 0; i < c; i++) {
+				Assert::AreEqual(expected_rgb_pixel[i], actual_rgb_pixel[i]);
+			}
+		}
+
 		TEST_METHOD(TestFindMinIndex_SampleArray_MinIndexEqual3)
 		{
 			const int n = 6;
