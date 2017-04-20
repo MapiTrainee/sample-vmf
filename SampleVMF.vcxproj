@@ -125,9 +125,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\start.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\..\Images\pic094___in_10.png" />
+    <Image Include="..\..\..\Images\pic094___in_20.png" />
+    <Image Include="..\..\..\Images\pic097___in_10.png" />
+    <Image Include="..\..\..\Images\pic097___in_20.png" />
+    <Image Include="..\..\..\Images\pic099___in_10.png" />
+    <Image Include="..\..\..\Images\pic099___in_20.png" />
+    <Image Include="..\..\..\Images\pic100___in_10.png" />
+    <Image Include="..\..\..\Images\pic100___in_20.png" />
     <Image Include="img\test.png" />
   </ItemGroup>
   <ItemGroup>
