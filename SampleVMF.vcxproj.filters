@@ -18,12 +18,33 @@
     <Image Include="img\test.png">
       <Filter>Pliki zasobów</Filter>
     </Image>
+    <Image Include="..\..\..\Images\pic094___in_10.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\pic094___in_20.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\pic097___in_10.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\pic097___in_20.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\pic099___in_10.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\pic099___in_20.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\pic100___in_10.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="..\..\..\Images\pic100___in_20.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
-      <Filter>Pliki źródłowe</Filter>
-    </ClCompile>
-    <ClCompile Include="src\start.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
   </ItemGroup>
