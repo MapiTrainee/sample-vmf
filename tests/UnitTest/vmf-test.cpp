@@ -10,16 +10,52 @@ namespace UnitTestSampleVMF
 	{
 	public:
 
-		TEST_METHOD(TestFilterVMF)
+		TEST_METHOD(TestFilterVMF_TestImage_ExpectedPixels)
 		{
-			Assert::IsTrue(1 == 1);
+			string image_name = "..\\..\\img\\test.png";
+			Mat image, gray_image;
+
+			image = imread(image_name, IMREAD_COLOR);
+			cvtColor(image, gray_image, CV_BGR2GRAY);
+
+			int window_side = 3;
+			Mat filtered_image,
+				filtered_gray_image;
+
+			Mat expected_image = Mat::zeros(32, 32, COLOR_BGR5552RGB),
+				expected_gray_image = Mat::zeros(32, 32, CV_BGR2GRAY);
+
+			vmf::vmfFilter(image, filtered_image, window_side);
+			vmf::vmfFilter(gray_image, filtered_gray_image, window_side);
+
+			Assert::AreEqual(expected_gray_image.cols, filtered_gray_image.cols);
+			Assert::AreEqual(expected_gray_image.rows, filtered_gray_image.rows);
+
+			Assert::AreEqual(expected_image.cols, filtered_image.cols);
+			Assert::AreEqual(expected_image.rows, filtered_image.rows);
+
+			unsigned char *p1 = (unsigned char*)(filtered_gray_image.data);
+			unsigned char *p2 = (unsigned char*)(expected_gray_image.data);
+			unsigned char *p3 = (unsigned char*)(filtered_image.data);
+			unsigned char *p4 = (unsigned char*)(expected_image.data);
+
+			for (int i = 0; i < filtered_gray_image.rows * filtered_gray_image.cols; i++) {
+				Assert::AreEqual(*p2, *p1);
+				p1++; p2++;
+			}
+
+			for (int i = 0; i < filtered_image.rows * filtered_image.cols * 3; i++) {
+				Assert::AreEqual(*p4, *p3);
+				p3++; p4++;
+			}
+
 		}
 
-		TEST_METHOD(TestSetPixel_Pixel_ExpectedArray)
+		TEST_METHOD(TestSetPixel_GrayPixel_ExpectedArray)
 		{
 			const int n = 3;
 			const int c = 1;
-			int pixel[c] = {0};
+			int pixel[c] = { 0 };
 			unsigned char actual_array[n*n*c] = {
 				1, 2, 3, 4, 5, 6, 7, 8, 9
 			};
@@ -70,7 +106,7 @@ namespace UnitTestSampleVMF
 			int actual_rgb_pixel[c] = { 0 };
 			int expected_rgb_pixel[c] = { 8 };
 
-			vmf::findPixel(window, actual_rgb_pixel, index, n, c);
+			vmf::findPixel(window, actual_rgb_pixel, index, c);
 			for (int i = 0; i < c; i++) {
 				Assert::AreEqual(expected_rgb_pixel[i], actual_rgb_pixel[i]);
 			}
@@ -89,19 +125,19 @@ namespace UnitTestSampleVMF
 			int actual_rgb_pixel[c] = { 0 };
 			int expected_rgb_pixel[c] = { 3,3,3 };
 
-			vmf::findPixel(window, actual_rgb_pixel, index, n, c);
+			vmf::findPixel(window, actual_rgb_pixel, index, c);
 			for (int i = 0; i < c; i++) {
 				Assert::AreEqual(expected_rgb_pixel[i], actual_rgb_pixel[i]);
 			}
 		}
 
-		TEST_METHOD(TestFindMinIndex_SampleArray_MinIndexEqual3)
+		TEST_METHOD(TestIndexOfMin_SampleArray_MinIndexEqual3)
 		{
 			const int n = 6;
 			double sample_array[6] = { 1, 2, 3, 0, 4, 1.5 };
 
 			int actual_index = 3;
-			int expected_index = vmf::findMinIndex(sample_array, n);
+			int expected_index = vmf::findIndexOfMinValue(sample_array, n);
 
 			Assert::AreEqual(expected_index, actual_index);
 		}
@@ -156,7 +192,7 @@ namespace UnitTestSampleVMF
 			};
 			double* actual_matrix = new double[n*n]();
 
-			vmf::calcDistanceMatrix(window, actual_matrix, n, channels);
+			vmf::calcDistanceMatrixFromWindow(window, actual_matrix, n, channels);
 			for (int i = 0; i < n*n; i++) {
 				Assert::AreEqual(expected_matrix[i], actual_matrix[i]);
 			}
@@ -177,7 +213,7 @@ namespace UnitTestSampleVMF
 			};
 			double* actual_matrix = new double[n*n]();
 
-			vmf::calcDistanceMatrix(window, actual_matrix, n, channels);
+			vmf::calcDistanceMatrixFromWindow(window, actual_matrix, n, channels);
 			for (int i = 0; i < n*n; i++) {
 				Assert::AreEqual(expected_matrix[i], actual_matrix[i]);
 			}
@@ -195,7 +231,7 @@ namespace UnitTestSampleVMF
 			};
 			double* actual_matrix = new double[n*n]();
 
-			vmf::calcDistanceMatrix(window, actual_matrix, n, channels);
+			vmf::calcDistanceMatrixFromWindow(window, actual_matrix, n, channels);
 			for (int i = 0; i < n*n; i++) {
 				Assert::AreEqual(expected_matrix[i], actual_matrix[i]);
 			}
@@ -212,7 +248,7 @@ namespace UnitTestSampleVMF
 				41, 42, 43, 44, 45,
 				51, 52, 53, 54, 55);
 
-			int expected_window[4] = { 44, 54, 45, 55 };
+			int expected_window[4] = { 21, 21, 21, 55 };
 			const int window_size = 2;
 
 			unsigned char *p = (unsigned char*)(sample_image_5by5.data);
@@ -220,7 +256,7 @@ namespace UnitTestSampleVMF
 
 			int* window = new int[window_size*window_size*c];
 
-			vmf::calcPixelsWindow(p, window, sample_image_5by5.rows, sample_image_5by5.cols, c, window_size);
+			vmf::calcPixelsWindowAndFilterPixels(p, window, sample_image_5by5.rows, sample_image_5by5.cols, c, window_size);
 			for (int i = 0; i < window_size*window_size*c; i++) {
 				Assert::AreEqual(expected_window[i], window[i]);
 			}
@@ -234,7 +270,7 @@ namespace UnitTestSampleVMF
 				11, 12, 13, 14, 15,
 				21, 22, 23, 24, 25);
 
-			int expected_window[4] = { 14, 24, 15 ,25 };
+			int expected_window[4] = { 14, 21, 15 ,25 };
 			const int window_size = 2;
 
 			unsigned char *p = (unsigned char*)(sample_image_2by5.data);
@@ -242,7 +278,7 @@ namespace UnitTestSampleVMF
 
 			int* window = new int[window_size*window_size*c];
 
-			vmf::calcPixelsWindow(p, window, sample_image_2by5.rows, sample_image_2by5.cols, c, window_size);
+			vmf::calcPixelsWindowAndFilterPixels(p, window, sample_image_2by5.rows, sample_image_2by5.cols, c, window_size);
 			for (int i = 0; i < window_size*window_size*c; i++) {
 				Assert::AreEqual(expected_window[i], window[i]);
 			}
@@ -259,7 +295,7 @@ namespace UnitTestSampleVMF
 				41, 42,
 				51, 52);
 
-			int expected_window[4] = { 41, 51, 42, 52 };
+			int expected_window[4] = { 41, 51, 31, 52 };
 			const int window_size = 2;
 
 			unsigned char *p = (unsigned char*)(sample_image_5by2.data);
@@ -267,7 +303,7 @@ namespace UnitTestSampleVMF
 
 			int* window = new int[window_size*window_size*c];
 
-			vmf::calcPixelsWindow(p, window, sample_image_5by2.rows, sample_image_5by2.cols, c, window_size);
+			vmf::calcPixelsWindowAndFilterPixels(p, window, sample_image_5by2.rows, sample_image_5by2.cols, c, window_size);
 			for (int i = 0; i < window_size*window_size*c; i++) {
 				Assert::AreEqual(expected_window[i], window[i]);
 			}
@@ -288,7 +324,7 @@ namespace UnitTestSampleVMF
 
 			int* window = new int[window_size*window_size*c];
 
-			int result = vmf::calcPixelsWindow(p, window, sample_image_3by3.rows, sample_image_3by3.cols, c, window_size);
+			int result = vmf::calcPixelsWindowAndFilterPixels(p, window, sample_image_3by3.rows, sample_image_3by3.cols, c, window_size);
 			Assert::AreEqual(-1, result);
 
 			delete[] window;
@@ -307,7 +343,7 @@ namespace UnitTestSampleVMF
 
 			int* window = new int[window_size*window_size*c];
 
-			int result = vmf::calcPixelsWindow(p, window, sample_image_3by3.rows, sample_image_3by3.cols, c, window_size);
+			int result = vmf::calcPixelsWindowAndFilterPixels(p, window, sample_image_3by3.rows, sample_image_3by3.cols, c, window_size);
 			Assert::AreEqual(-1, result);
 
 			delete[] window;
@@ -327,7 +363,7 @@ namespace UnitTestSampleVMF
 
 			int* window = new int[window_size*window_size*c];
 
-			vmf::calcPixelsWindow(p, window, sample_image_2by2.rows, sample_image_2by2.cols, c, window_size);
+			vmf::calcPixelsWindowAndFilterPixels(p, window, sample_image_2by2.rows, sample_image_2by2.cols, c, window_size);
 			for (int i = 0; i < window_size*window_size*c; i++) {
 				Assert::AreEqual(expected_window[i], window[i]);
 			}
@@ -349,7 +385,7 @@ namespace UnitTestSampleVMF
 
 			int* window = new int[window_size*window_size*c];
 
-			vmf::calcPixelsWindow(p, window, sample_image_2by2.rows, sample_image_2by2.cols, c, window_size);
+			vmf::calcPixelsWindowAndFilterPixels(p, window, sample_image_2by2.rows, sample_image_2by2.cols, c, window_size);
 			for (int i = 0; i < window_size*window_size*c; i++) {
 				Assert::AreEqual(expected_window[i], window[i]);
 			}
@@ -369,7 +405,7 @@ namespace UnitTestSampleVMF
 
 			int* window = new int[window_size*window_size*c];
 
-			vmf::calcPixelsWindow(p, window, sample_rgb_image_2by2.rows, sample_rgb_image_2by2.cols, c, window_size);
+			vmf::calcPixelsWindowAndFilterPixels(p, window, sample_rgb_image_2by2.rows, sample_rgb_image_2by2.cols, c, window_size);
 			for (int i = 0; i < window_size*window_size*c; i++) {
 				Assert::AreEqual(expected_window[i], window[i]);
 			}
